@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Latihan Mengurutkan Kata Bahasa Inggris</title>
+<style>
+  :root{
+    --bg-dark:#064e3b;      /* hijau tua */
+    --panel:#bbf7d0;        /* hijau muda */
+    --maroon:#800000;       /* tombol Hasil */
+    --green:#16a34a;        /* tombol Reset */
+    --blue:#2563eb;         /* optional */
+    --txt:#04251a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: var(--bg-dark);
+    color:var(--txt);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  /* Card */
+  .card{
+    width: 820px;
+    max-width: 98vw;
+    background: var(--panel);
+    border-radius:12px;
+    padding:18px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.2);
+  }
+
+  header{
+    text-align:center;
+    margin-bottom:12px;
+  }
+  header h1{font-size:20px;color:#064e3b;margin-bottom:6px}
+  header p{font-size:13px;color:#064e3b}
+
+  .top-controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:12px;
+  }
+
+  .pager {
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+  .pager button{
+    padding:8px 12px;
+    border-radius:8px;
+    border:none;
+    background:#0f766e;
+    color:white;
+    font-weight:700;
+    cursor:pointer;
+  }
+
+  .question-title{
+    font-weight:800;
+    color:#064e3b;
+    margin-bottom:8px;
+  }
+
+  /* Word bank */
+  #wordBank{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .chip{
+    background:#fff;
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:grab;
+    font-weight:700;
+    box-shadow:0 4px 12px rgba(2,6,23,0.08);
+    user-select:none;
+  }
+  .chip:active{cursor:grabbing}
+
+  /* Drop area (textarea-like) putih tanpa tulisan */
+  #dropArea{
+    width:100%;
+    min-height:70px;
+    background:#fff;
+    border-radius:8px;
+    padding:10px;
+    font-size:16px;
+    line-height:1.4;
+    color:#000;
+    margin-bottom:12px;
+    border:2px dashed rgba(6,95,70,0.08);
+    overflow-wrap:break-word;
+    white-space:pre-wrap;
+  }
+
+  /* Controls */
+  .controls{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    margin-bottom:8px;
+  }
+  button.app-btn{
+    padding:10px 14px;
+    border-radius:8px;
+    border:none;
+    color:#fff;
+    font-weight:800;
+    cursor:pointer;
+  }
+  button#btnResult{ background: var(--maroon); } /* Maroon */
+  button#btnReset{ background: var(--green); }   /* Hijau */
+  button#btnShuffle{ background: var(--blue); }  /* Biru */
+
+  #feedback{
+    font-weight:800;
+    min-height:1.2em;
+  }
+
+  /* small screen */
+  @media (max-width:720px){
+    .top-controls { flex-direction:column; align-items:flex-start; gap:8px; }
+    .pager { width:100%; justify-content:space-between; }
+  }
+</style>
+</head>
+<body>
+  <div class="card" role="application" aria-label="Latihan menyusun kalimat bahasa inggris">
+    <header>
+      <h1>Latihan Menyusun Kalimat Bahasa Inggris</h1>
+      <p>Kerjakan dengan cara menyeret (drag &amp; drop) kata ke kotak putih di bawah. Gunakan tombol Hasil untuk cek jawaban, Reset untuk ulang.</p>
+    </header>
+
+    <div class="top-controls">
+      <div class="pager" aria-label="Navigasi soal">
+        <button id="prevBtn" aria-label="Sebelumnya">Previous</button>
+        <div style="padding:8px 12px;background:#e6fff2;border-radius:8px;font-weight:800">Soal <span id="currentNumber">1</span> / 5</div>
+        <button id="nextBtn" aria-label="Berikutnya">Next</button>
+      </div>
+
+      <div>
+        <!-- optional global explanation -->
+      </div>
+    </div>
+
+    <main>
+      <div class="question-title" id="qTitle">Soal Nomor 1</div>
+      <div id="wordBank" aria-live="polite" aria-label="Kumpulan kata"></div>
+
+      <!-- drop area (textarea-like) -->
+      <div id="dropArea" aria-label="Area jawaban (tarik kata ke sini)"></div>
+
+      <div class="controls" role="group" aria-label="Kontrol soal">
+        <button id="btnResult" class="app-btn">Hasil</button>
+        <button id="btnReset" class="app-btn">Reset</button>
+        <button id="btnShuffle" class="app-btn">Acak</button>
+      </div>
+
+      <div id="feedback" aria-live="polite"></div>
+    </main>
+  </div>
+
+<script>
+/* Soal & jawaban benar (normalisasi: lowercase, single spaces) */
+const questions = [
+  { id:1, words:["I","am","going","to","the","market"], correct: "i am going to the market" },
+  { id:2, words:["I","will","go","to","the","mountain"], correct: "i will go to the mountain" },
+  { id:3, words:["I","will","Play","Football","tomorrow"], correct: "i will play football tomorrow" },
+  { id:4, words:["I","am","speaking","English"], correct: "i am speaking english" },
+  { id:5, words:["I","went","to","the","zoo","yesterday"], correct: "i went to the zoo yesterday" }
+];
+
+const wordBankEl = document.getElementById('wordBank');
+const dropArea = document.getElementById('dropArea');
+const feedbackEl = document.getElementById('feedback');
+const qTitle = document.getElementById('qTitle');
+const currentNumber = document.getElementById('currentNumber');
+
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const btnResult = document.getElementById('btnResult');
+const btnReset = document.getElementById('btnReset');
+const btnShuffle = document.getElementById('btnShuffle');
+
+let currentIndex = 0;
+
+/* Always work from a fresh copy for each question when it's shown.
+   That ensures words are in full set and then shuffled on each show. */
+function cloneWords(idx){
+  return questions[idx].words.slice();
+}
+
+/* Normalize string for comparison */
+function normalize(s){
+  return String(s || '').trim().replace(/\s+/g,' ').toLowerCase();
+}
+
+/* Fisher-Yates shuffle */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* Render current question: shuffle words and show bank */
+let workingWords = []; // current remaining words in bank
+function renderQuestion(){
+  feedbackEl.textContent = '';
+  dropArea.textContent = '';
+  const q = questions[currentIndex];
+  qTitle.textContent = `Soal Nomor ${q.id}`;
+  currentNumber.textContent = `${currentIndex+1}`;
+
+  // restore full words and shuffle
+  workingWords = cloneWords(currentIndex);
+  const toShow = shuffle(workingWords);
+
+  wordBankEl.innerHTML = '';
+  toShow.forEach(word => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = word;
+    chip.draggable = true;
+
+    chip.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', word);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    // allow touch/click fallback: tap to move
+    chip.addEventListener('click', () => {
+      moveWordToDrop(word);
+    });
+
+    wordBankEl.appendChild(chip);
+  });
+
+  // update prev/next disabled states
+  prevBtn.disabled = (currentIndex === 0);
+  nextBtn.disabled = (currentIndex === questions.length - 1);
+  prevBtn.style.opacity = prevBtn.disabled ? 0.5 : 1;
+  nextBtn.style.opacity = nextBtn.disabled ? 0.5 : 1;
+}
+
+/* Move word from bank to drop area and remove one instance from workingWords */
+function moveWordToDrop(word){
+  // append with space (no dashes)
+  const curr = dropArea.textContent.trim();
+  dropArea.textContent = curr ? (curr + ' ' + word) : word;
+
+  // remove only first match from workingWords
+  const idx = workingWords.findIndex(w => w === word);
+  if(idx !== -1) workingWords.splice(idx, 1);
+
+  // remove one chip element
+  const chips = Array.from(wordBankEl.children);
+  for(const c of chips){
+    if(c.textContent === word){
+      c.remove();
+      break;
+    }
+  }
+
+  feedbackEl.textContent = '';
+}
+
+/* Drop handling */
+dropArea.addEventListener('dragover', (e) => { e.preventDefault(); });
+dropArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const word = e.dataTransfer.getData('text/plain');
+  if(word) moveWordToDrop(word);
+});
+
+/* Buttons */
+btnResult.addEventListener('click', () => {
+  const user = normalize(dropArea.textContent);
+  const expected = questions[currentIndex].correct;
+  if(user === expected){
+    feedbackEl.style.color = '#065f46';
+    feedbackEl.textContent = 'YEAYY.. HEBAT, Anda benar';
+  } else {
+    feedbackEl.style.color = '#b91c1c';
+    feedbackEl.textContent = 'Maaf, Jawaban Anda Salah, Ulangi Lagi, Semangat Yaa';
+  }
+});
+
+btnReset.addEventListener('click', () => {
+  // reset current question: restore words and clear drop
+  renderQuestion();
+});
+
+btnShuffle.addEventListener('click', () => {
+  // shuffle remaining chips in bank (does not restore dropped words)
+  feedbackEl.textContent = '';
+  const shuffled = shuffle(workingWords);
+  wordBankEl.innerHTML = '';
+  shuffled.forEach(word => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = word;
+    chip.draggable = true;
+    chip.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', word);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    chip.addEventListener('click', () => moveWordToDrop(word));
+    wordBankEl.appendChild(chip);
+  });
+});
+
+/* Navigation */
+prevBtn.addEventListener('click', () => {
+  if(currentIndex > 0){
+    currentIndex--;
+    renderQuestion();
+  }
+});
+nextBtn.addEventListener('click', () => {
+  if(currentIndex < questions.length - 1){
+    currentIndex++;
+    renderQuestion();
+  }
+});
+
+/* Keyboard: allow Enter to trigger chip click when focused (accessibility) */
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    // if focus is on a chip element, trigger click
+    const el = document.activeElement;
+    if(el && el.classList && el.classList.contains('chip')){
+      el.click();
+    }
+  }
+});
+
+/* Initialize first question */
+renderQuestion();
+
+</script>
+</body>
+</html>
