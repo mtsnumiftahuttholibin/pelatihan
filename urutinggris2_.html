@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mengurutkan Kata Bahasa Inggris</title>
+  <style>
+    body {
+      background-color: #4b0082; /* Ungu tua */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: system-ui, sans-serif;
+    }
+
+    .container {
+      background-color: #d8b4fe; /* hijau ungu muda */
+      border-radius: 12px;
+      padding: 30px;
+      width: 600px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #1f2937;
+    }
+
+    #wordContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .word {
+      background-color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: grab;
+      font-weight: bold;
+      user-select: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    textarea {
+      width: 100%;
+      height: 60px;
+      border-radius: 8px;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      background-color: white;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      margin: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #checkBtn { background-color: #2563eb; color: white; }
+    #resetBtn { background-color: #16a34a; color: white; }
+
+    #feedback {
+      margin-top: 15px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Urutkan Kata Bahasa Inggris</h1>
+    <div id="wordContainer"></div>
+    <textarea id="answerArea" placeholder="Tarik kata ke sini..."></textarea><br>
+    <button id="checkBtn">Hasil</button>
+    <button id="resetBtn">Reset</button>
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    const words = ["I", "am", "going", "to", "the", "market"];
+    const container = document.getElementById('wordContainer');
+    const answerArea = document.getElementById('answerArea');
+    const feedback = document.getElementById('feedback');
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function renderWords() {
+      container.innerHTML = '';
+      shuffle(words).forEach(word => {
+        const span = document.createElement('div');
+        span.className = 'word';
+        span.textContent = word;
+        span.draggable = true;
+        span.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', word);
+          e.target.classList.add('dragging');
+        });
+        span.addEventListener('dragend', e => {
+          e.target.classList.remove('dragging');
+        });
+        container.appendChild(span);
+      });
+    }
+
+    answerArea.addEventListener('dragover', e => e.preventDefault());
+
+    answerArea.addEventListener('drop', e => {
+      e.preventDefault();
+      const word = e.dataTransfer.getData('text/plain');
+      if (word) {
+        answerArea.value += (answerArea.value ? ' ' : '') + word;
+        const wordsLeft = Array.from(container.children);
+        wordsLeft.forEach(w => {
+          if (w.textContent === word) w.remove();
+        });
+      }
+    });
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      const answer = answerArea.value.trim().replace(/\s+/g, ' ');
+      if (answer === 'I am going to the market') {
+        feedback.textContent = 'YEAYY.. HEBAT, Anda benar';
+        feedback.style.color = '#065f46';
+      } else {
+        feedback.textContent = 'Maaf, Jawaban Anda Salah, Ulangi Lagi, Semangat Yaa';
+        feedback.style.color = '#b91c1c';
+      }
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      answerArea.value = '';
+      feedback.textContent = '';
+      renderWords();
+    });
+
+    renderWords();
+  </script>
+</body>
+</html>
