@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Latihan Menyusun Kalimat Bahasa Inggris</title>
+<style>
+  :root{
+    --bg-dark:#064e3b;      /* hijau tua */
+    --panel:#bbf7d0;        /* hijau muda */
+    --nav-width:8cm;        /* lebar navigator sesuai permintaan */
+    --header-height:1.75cm; /* tinggi header sesuai permintaan */
+    --white:#ffffff;
+    --maroon:#800000;
+    --green:#16a34a;
+    --blue:#2563eb;
+  }
+
+  /* Reset sederhana */
+  * { box-sizing: border-box; margin:0; padding:0; }
+
+  html,body { height:100%; }
+
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: var(--bg-dark);
+    color: #0f172a;
+  }
+
+  /* Grid layout: header (fixed height) then content area with nav + main */
+  .app {
+    display: grid;
+    grid-template-rows: var(--header-height) 1fr;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header.app-header{
+    background: #facc15; /* kuning */
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 0 12px;
+  }
+  .header-inner{
+    width:100%;
+    max-width:1100px;
+    text-align:center;
+    line-height:1.25; /* spasi antar tulisan = 1.25 */
+    color: var(--white);
+    font-weight:700;
+    font-size: calc(10px + 0.9vmin);
+  }
+  .header-inner .line1{ display:block; font-size: calc(10px + 1.2vmin); }
+  .header-inner .line2{ display:block; font-weight:600; font-size: calc(8px + 0.9vmin); }
+
+  /* Main area */
+  .main-area{
+    display: grid;
+    grid-template-columns: var(--nav-width) 1fr;
+    gap: 18px;
+    padding: 18px;
+    align-items: start;
+    justify-items: center;
+  }
+
+  /* Navigator (left) */
+  nav.navigator{
+    width:100%;
+    max-width: var(--nav-width);
+    background: rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 12px;
+    color: #04251a;
+  }
+  nav .nav-title{
+    font-weight:700;
+    color:#0b3b2a;
+    margin-bottom:8px;
+    text-align:center;
+  }
+  nav ul { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  nav li {
+    background: var(--panel);
+    padding:10px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    text-align:left;
+    font-weight:600;
+    box-shadow:0 3px 8px rgba(2,6,23,0.12);
+  }
+  nav li.active { outline: 3px solid rgba(6,95,70,0.12); transform:translateY(-1px); }
+
+  /* Content (right) */
+  .content {
+    width:100%;
+    max-width:800px;
+    background: var(--panel);
+    padding:18px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(2,6,23,0.18);
+  }
+
+  .content h2 { margin-bottom:10px; color:#064e3b; }
+  .instructions { margin-bottom:12px; color:#073227; font-size:0.95rem; }
+
+  /* Word bank */
+  #wordBank {
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:14px;
+  }
+
+  .chip {
+    background: #ffffff;
+    padding:10px 14px;
+    border-radius:8px;
+    cursor:grab;
+    font-weight:700;
+    user-select:none;
+    box-shadow:0 3px 8px rgba(2,6,23,0.12);
+  }
+  .chip[draggable="true"]:active{ cursor:grabbing; }
+
+  /* Drop area (textarea-like) */
+  #dropArea {
+    width:100%;
+    min-height:70px;
+    border-radius:8px;
+    background: #ffffff; /* putih */
+    padding:10px;
+    font-size:16px;
+    line-height:1.4;
+    color:#000;
+    margin-bottom:12px;
+    border:2px dashed rgba(6,95,70,0.06);
+    overflow-wrap:break-word;
+  }
+
+  /* Buttons */
+  .controls {
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  button.app-btn{
+    padding:10px 14px;
+    border-radius:8px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    color: white;
+  }
+  button#btnResult{ background: var(--maroon); } /* Maroon */
+  button#btnReset{ background: var(--green); }   /* Hijau */
+  button#btnShuffle{ background: var(--blue); }  /* Biru */
+
+  /* Feedback */
+  #feedback {
+    margin-top:8px;
+    font-weight:700;
+    min-height:1.2em;
+  }
+
+  /* Small responsive */
+  @media (max-width:880px){
+    .main-area{ grid-template-columns: 1fr; padding:12px; gap:12px; }
+    nav.navigator{ order:2; width:100%; max-width:100%; }
+    .content{ order:1; }
+    nav li{ text-align:center; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header" role="banner">
+      <div class="header-inner" aria-hidden="false">
+        <span class="line1">LATIHAN MENYUSUN KALIMAT BAHASA INGGRIS</span>
+        <span class="line2">Disusun oleh: Tim Pengembang Media Pembelajaran Online Berbasis AI FK2MTs LP Ma’arif</span>
+      </div>
+    </header>
+
+    <div class="main-area">
+      <!-- NAVIGATOR KIRI -->
+      <nav class="navigator" aria-label="Navigator Soal">
+        <div class="nav-title">Daftar Soal</div>
+        <ul id="navList">
+          <!-- items diisi secara dinamis -->
+        </ul>
+      </nav>
+
+      <!-- KONTEN SOAL -->
+      <main class="content" role="main">
+        <h2 id="soalTitle">Soal Nomor 1</h2>
+        <div class="instructions">
+          Susun kata-kata menjadi kalimat yang benar dengan cara <strong>drag &amp; drop</strong> ke kotak putih di bawah.
+        </div>
+
+        <div id="wordBank" aria-live="polite" aria-label="Kumpulan kata yang dapat diseret"></div>
+
+        <!-- drop area menyerupai textarea putih tanpa tulisan -->
+        <div id="dropArea" contenteditable="false" aria-label="Area jawaban (tarik kata ke sini)"></div>
+
+        <div class="controls" role="region" aria-label="Kontrol soal">
+          <button id="btnResult" class="app-btn">Hasil</button>
+          <button id="btnReset" class="app-btn">Reset</button>
+          <button id="btnShuffle" class="app-btn">Acak</button>
+        </div>
+
+        <div id="feedback" aria-live="polite"></div>
+      </main>
+    </div>
+  </div>
+
+<script>
+/*
+  Data soal:
+  - setiap soal berupa array kata
+  - correctAnswers stores the expected sentence in normalized lowercase
+*/
+const questions = [
+  { id:1, words: ["I","am","going","to","the","market"], correct: "i am going to the market" },
+  { id:2, words: ["I","will","go","to","the","mountain"], correct: "i will go to the mountain" },
+  { id:3, words: ["I","will","Play","Football","tomorrow"], correct: "i will play football tomorrow" },
+  { id:4, words: ["I","am","speaking","English"], correct: "i am speaking english" },
+  { id:5, words: ["I","went","to","the","zoo","yesterday"], correct: "i went to the zoo yesterday" }
+];
+
+const navListEl = document.getElementById('navList');
+const wordBankEl = document.getElementById('wordBank');
+const dropArea = document.getElementById('dropArea');
+const feedbackEl = document.getElementById('feedback');
+const soalTitle = document.getElementById('soalTitle');
+
+let currentIndex = 0; // index in questions array
+// store a working copy of words for each question (so reset/acak operate per question)
+const working = questions.map(q => ({ words: [...q.words] }));
+
+/* Utility: normalize strings for comparison:
+   - lowercase
+   - collapse whitespace
+*/
+function normalize(s){
+  return String(s || '').trim().replace(/\s+/g,' ').toLowerCase();
+}
+
+/* Fisher-Yates shuffle (good shuffle) */
+function shuffleArray(a){
+  const arr = [...a];
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+/* Render navigator */
+function renderNav(){
+  navListEl.innerHTML = '';
+  questions.forEach((q, idx) => {
+    const li = document.createElement('li');
+    li.textContent = `Soal Nomor ${q.id}`;
+    li.dataset.idx = idx;
+    if(idx === currentIndex) li.classList.add('active');
+    li.addEventListener('click', () => {
+      currentIndex = idx;
+      loadQuestion(idx);
+      renderNav();
+    });
+    navListEl.appendChild(li);
+  });
+}
+
+/* Render word bank for current question
+   we randomize the order when showing the question, as requested (urutan acak setiap kali muncul)
+*/
+function renderWordBank(idx, options = { shuffle: true }){
+  wordBankEl.innerHTML = '';
+  // working[idx].words holds current remaining words (not yet dropped)
+  const source = working[idx].words;
+  const list = options.shuffle ? shuffleArray(source) : [...source];
+
+  list.forEach(word => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.textContent = word;
+    chip.draggable = true;
+
+    // Drag events
+    chip.addEventListener('dragstart', (e) => {
+      // set data: the word text
+      e.dataTransfer.setData('text/plain', word);
+      // for touch fallback, set effectAllowed
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    wordBankEl.appendChild(chip);
+  });
+}
+
+/* Set up drop area to accept drops */
+dropArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+});
+dropArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  const word = e.dataTransfer.getData('text/plain');
+  if(!word) return;
+  appendWordToDrop(word);
+});
+
+/* Append word to drop area and remove from word bank (working list) */
+function appendWordToDrop(word){
+  // append with space (no dashes)
+  const current = dropArea.textContent.trim();
+  dropArea.textContent = current ? (current + ' ' + word) : word;
+
+  // remove first matching word from working[currentIndex].words
+  const arr = working[currentIndex].words;
+  const pos = arr.findIndex(w => w === word);
+  if(pos !== -1){
+    arr.splice(pos,1);
+  }
+
+  // remove corresponding chip from DOM
+  const chips = Array.from(wordBankEl.children);
+  for(const c of chips){
+    if(c.textContent === word){
+      c.remove();
+      break;
+    }
+  }
+
+  feedbackEl.textContent = '';
+}
+
+/* Load a question by index */
+function loadQuestion(idx){
+  // clear drop area
+  dropArea.textContent = '';
+  feedbackEl.textContent = '';
+  soalTitle.textContent = `Soal Nomor ${questions[idx].id}`;
+
+  // If working[idx].words is empty (e.g., after previous completion), restore from original
+  if(!Array.isArray(working[idx].words) || working[idx].words.length === 0){
+    working[idx].words = [...questions[idx].words];
+  }
+
+  // Render word bank with shuffle as they requested every time it appears
+  renderWordBank(idx, { shuffle: true });
+
+  // update active nav
+  renderNav();
+}
+
+/* Button handlers */
+document.getElementById('btnResult').addEventListener('click', () => {
+  const userAnswer = normalize(dropArea.textContent);
+  const expected = questions[currentIndex].correct;
+  if(userAnswer === expected){
+    feedbackEl.style.color = '#065f46';
+    feedbackEl.textContent = 'Hebat. Jawaban Anda benar';
+  } else {
+    feedbackEl.style.color = '#b91c1c';
+    feedbackEl.textContent = 'Maaf. Jawaban Anda salah. Ulangi lagi.';
+  }
+});
+
+/* Reset: put back all words, clear drop area, and re-render bank (shuffled) */
+document.getElementById('btnReset').addEventListener('click', () => {
+  // restore working words to original for current question
+  working[currentIndex].words = [...questions[currentIndex].words];
+  dropArea.textContent = '';
+  feedbackEl.textContent = '';
+  renderWordBank(currentIndex, { shuffle: true });
+});
+
+/* Shuffle: reshuffle remaining words in bank (does not restore already dropped words) */
+document.getElementById('btnShuffle').addEventListener('click', () => {
+  feedbackEl.textContent = '';
+  renderWordBank(currentIndex, { shuffle: true });
+});
+
+/* Enable clicking chips to move them (in case user on touch device) */
+wordBankEl.addEventListener('click', (e) => {
+  const target = e.target;
+  if(target && target.classList.contains('chip')){
+    const word = target.textContent;
+    appendWordToDrop(word);
+  }
+});
+
+/* Keyboard accessibility: allow pressing Enter on nav items (delegate) */
+navListEl.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    const li = e.target;
+    if(li && li.dataset && li.dataset.idx){
+      currentIndex = Number(li.dataset.idx);
+      loadQuestion(currentIndex);
+    }
+  }
+});
+
+/* Initialize: render nav and load first question */
+renderNav();
+loadQuestion(0);
+
+/* Notes:
+   - Kata yang sudah dipindah ke dropArea dihilangkan dari word bank & working list.
+   - Jika pengguna ingin mengembalikan kata yg sudah dipindah, gunakan tombol Reset untuk me-reset soal.
+   - Untuk urutan bahasa Arab (kanan-ke-kiri): instruksi ini dicantumkan agar guru menyesuaikan jika membuat soal Bahasa Arab.
+*/
+</script>
+</body>
+</html>
