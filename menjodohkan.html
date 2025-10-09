@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menjodohkan Gambar dan Teks</title>
+<style>
+  body {
+    background-color: yellow; /* warna layer laptop */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h2, h3 {
+    text-align: center;
+    color: maroon;
+  }
+
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    width: 180px;
+    padding: 10px;
+    text-align: center;
+  }
+
+  .card img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  textarea {
+    width: 100%;
+    height: 30px;
+    margin-top: 5px;
+    resize: none;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    text-align: center;
+    font-size: 14px;
+    background-color: white; /* teks area putih */
+  }
+
+  .choices {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 30px;
+  }
+
+  .choice {
+    background-color: pink;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: grab;
+    font-weight: bold;
+  }
+
+  .buttons {
+    text-align: center;
+    margin-top: 20px;
+  }
+
+  button {
+    background-color: maroon;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 5px;
+  }
+
+  button:hover {
+    background-color: #600000;
+  }
+
+  #feedback {
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 15px;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 14px;
+    color: maroon;
+  }
+</style>
+</head>
+<body>
+
+<h2>Menjodohkan Gambar dan Teks</h2>
+<h3>Tarik (drag) kata ke kotak teks di bawah gambar yang sesuai!</h3>
+
+<div id="imageContainer" class="container"></div>
+
+<div class="choices" id="choicesContainer">
+  <div class="choice" draggable="true" id="mulut">mulut</div>
+  <div class="choice" draggable="true" id="kerongkongan">kerongkongan</div>
+  <div class="choice" draggable="true" id="lambung">lambung</div>
+  <div class="choice" draggable="true" id="usus_halus">usus halus</div>
+  <div class="choice" draggable="true" id="usus_besar">usus besar</div>
+</div>
+
+<div class="buttons">
+  <button id="hasilBtn">Hasil</button>
+  <button id="resetBtn">Reset</button>
+</div>
+
+<div id="feedback"></div>
+
+<footer>
+  Disusun oleh <b>MTs NU Miftahut Tholibin</b><br>
+  Terimakasih
+</footer>
+
+<script>
+// Data gambar dan jawaban benar
+const images = [
+  {id: 1, url: "https://mtsnumiftahuttholibin.github.io/pelatihan/gambar%201.jpg", answer: "mulut"},
+  {id: 2, url: "https://mtsnumiftahuttholibin.github.io/pelatihan/gambar%202.jpg", answer: "kerongkongan"},
+  {id: 3, url: "https://mtsnumiftahuttholibin.github.io/pelatihan/gambar%203.jpg", answer: "lambung"},
+  {id: 4, url: "https://mtsnumiftahuttholibin.github.io/pelatihan/gambar%204.jpg", answer: "usus halus"},
+  {id: 5, url: "https://mtsnumiftahuttholibin.github.io/pelatihan/gambar%205.jpg", answer: "usus besar"}
+];
+
+// Acak urutan gambar
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+const shuffledImages = shuffle([...images]);
+const container = document.getElementById("imageContainer");
+
+// Tampilkan gambar dan textarea
+shuffledImages.forEach(img => {
+  const div = document.createElement("div");
+  div.className = "card";
+  div.innerHTML = `
+    <img src="${img.url}" alt="gambar ${img.id}">
+    <textarea id="jawaban${img.id}" placeholder="Drop jawaban di sini" ondragover="event.preventDefault()" ondrop="drop(event, ${img.id})"></textarea>
+  `;
+  container.appendChild(div);
+});
+
+// Drag and Drop
+const choices = document.querySelectorAll(".choice");
+choices.forEach(choice => {
+  choice.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text", e.target.id);
+  });
+});
+
+function drop(e, id) {
+  e.preventDefault();
+  const textId = e.dataTransfer.getData("text");
+  const draggedText = document.getElementById(textId);
+  const textArea = document.getElementById("jawaban" + id);
+  
+  textArea.value = draggedText.textContent;
+  draggedText.style.display = "none"; // sembunyikan teks setelah di-drop
+}
+
+// Tombol Hasil
+document.getElementById("hasilBtn").addEventListener("click", () => {
+  let benar = true;
+  for (const img of images) {
+    const userAnswer = document.getElementById("jawaban" + img.id)?.value.trim().toLowerCase();
+    if (userAnswer !== img.answer) benar = false;
+  }
+  
+  const feedback = document.getElementById("feedback");
+  if (benar) {
+    feedback.textContent = "Yey Hebat!";
+    feedback.style.color = "green";
+  } else {
+    feedback.textContent = "Maaf yok ulangi lagi";
+    feedback.style.color = "red";
+  }
+});
+
+// Tombol Reset
+document.getElementById("resetBtn").addEventListener("click", () => {
+  document.querySelectorAll("textarea").forEach(t => t.value = "");
+  document.querySelectorAll(".choice").forEach(c => c.style.display = "inline-block");
+  document.getElementById("feedback").textContent = "";
+});
+
+</script>
+</body>
+</html>
