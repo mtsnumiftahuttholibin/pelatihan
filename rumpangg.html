@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Latihan Teks Rumpang - Kenalan</title>
+  <style>
+    body {
+      background-color: maroon; /* warna layer laptop */
+      font-family: Arial, Helvetica, sans-serif;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: pink; /* skin warna merah muda */
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.3);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      color: maroon;
+    }
+
+    audio {
+      width: 100%;
+      margin: 10px 0 20px 0;
+    }
+
+    .text-area {
+      background-color: white; /* textarea putih */
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 5px;
+      font-size: 16px;
+      width: 120px;
+      resize: none;
+      text-align: center;
+      color: black;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      background-color: maroon;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #600000;
+    }
+
+    #feedback {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Latihan Mengisi Teks Rumpang</h2>
+    <p><b>Instruksi:</b> Putar rekaman di bawah ini sampai selesai sebelum mengisi teks rumpang.</p>
+    
+    <audio id="audio" controls>
+      <source src="https://mtsnumiftahuttholibin.github.io/pelatihan/kenalan.mp3" type="audio/mpeg">
+      Browser Anda tidak mendukung audio.
+    </audio>
+
+    <p>
+      My <textarea id="blank1" class="text-area" rows="1" disabled></textarea> is Rosalia.
+      I am <textarea id="blank2" class="text-area" rows="1" disabled></textarea> years old.
+      I am at the <textarea id="blank3" class="text-area" rows="1" disabled></textarea> of junior high school.
+      Now, I live with my lovely family in <textarea id="blank4" class="text-area" rows="1" disabled></textarea> West Java.
+      There are <textarea id="blank5" class="text-area" rows="1" disabled></textarea> people in my family.
+    </p>
+
+    <div class="buttons">
+      <button id="checkBtn" disabled>Hasil</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    const audio = document.getElementById("audio");
+    const checkBtn = document.getElementById("checkBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const feedback = document.getElementById("feedback");
+
+    const blanks = [
+      document.getElementById("blank1"),
+      document.getElementById("blank2"),
+      document.getElementById("blank3"),
+      document.getElementById("blank4"),
+      document.getElementById("blank5")
+    ];
+
+    // Jawaban yang benar
+    const correctAnswers = ["name", "thirteen", "first grade", "bandung", "five"];
+
+    // Aktifkan isian setelah audio selesai
+    audio.addEventListener("ended", () => {
+      blanks.forEach(b => b.disabled = false);
+      checkBtn.disabled = false;
+      feedback.textContent = "Silakan isi teks rumpang.";
+      feedback.style.color = "maroon";
+    });
+
+    // Tombol hasil
+    checkBtn.addEventListener("click", () => {
+      let correct = true;
+      for (let i = 0; i < blanks.length; i++) {
+        const userAnswer = blanks[i].value.trim().toLowerCase();
+        if (userAnswer !== correctAnswers[i]) {
+          correct = false;
+        }
+      }
+
+      if (correct) {
+        feedback.textContent = "Good Job!";
+        feedback.style.color = "green";
+      } else {
+        feedback.textContent = "Please try again!";
+        feedback.style.color = "red";
+      }
+    });
+
+    // Tombol reset
+    resetBtn.addEventListener("click", () => {
+      blanks.forEach(b => {
+        b.value = "";
+        b.disabled = true;
+      });
+      checkBtn.disabled = true;
+      feedback.textContent = "";
+      audio.currentTime = 0;
+      audio.pause();
+    });
+  </script>
+</body>
+</html>
