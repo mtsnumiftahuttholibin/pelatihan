@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Isian Teks Rumpang - Kenalan</title>
+  <style>
+    :root{
+      --maroon: #800000;
+      --pink-skin: #ffd6e0;
+      --white: #ffffff;
+      --card-radius: 12px;
+      --maxw: 900px;
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(#f7f7f9,#eef6fa);
+      margin:0;
+      padding:24px;
+      display:flex;
+      justify-content:center;
+    }
+
+    /* Layer laptop (maroon) */
+    .laptop-layer{
+      width:100%;
+      max-width:var(--maxw);
+      background:var(--maroon);
+      padding:18px;
+      border-radius:16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+      color:#fff;
+    }
+
+    /* Inner container (pink skin for soal) */
+    .card{
+      background:var(--pink-skin);
+      color:#111;
+      border-radius:12px;
+      padding:20px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    }
+
+    h1{ margin:0 0 8px;font-size:20px }
+    p.instr{ margin:0 0 12px; font-size:14px }
+
+    .audio-row{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:14px;
+      flex-wrap:wrap;
+    }
+    audio{ outline:none; }
+
+    .note{
+      font-size:13px;
+      color:#333;
+      margin-bottom:10px;
+    }
+
+    /* Passage area */
+    .passage{
+      background: linear-gradient(180deg,#fff 0%,#fffefc 100%);
+      border-radius:10px;
+      padding:16px;
+      margin-bottom:12px;
+      line-height:1.6;
+      color:#111;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    .passage textarea{
+      display:inline-block;
+      vertical-align:middle;
+      width:200px;            /* lebar default input rumpang */
+      min-height:36px;
+      max-width:100%;
+      resize:none;
+      padding:6px 8px;
+      border-radius:6px;
+      border:1px solid #ddd;
+      background:var(--white); /* sesuai permintaan: textarea putih */
+      font-size:15px;
+      font-family:inherit;
+      color:#111;
+    }
+
+    /* Make the inputs wrap in small screens */
+    .passage .inline{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .controls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    button{
+      padding:10px 14px;
+      border-radius:8px;
+      border:0;
+      cursor:pointer;
+      font-weight:600;
+      box-shadow:0 6px 12px rgba(0,0,0,0.12);
+    }
+    button#check{ background:#ff4d7e; color:#fff; } /* tombol hasil senada skin */
+    button#reset{ background:#fff; color:#111; }
+    button:disabled{ opacity:.5; cursor:not-allowed }
+
+    .feedback{
+      margin-left:8px;
+      padding:8px 12px;
+      border-radius:8px;
+      background:rgba(255,255,255,0.6);
+      color:#111;
+      font-weight:700;
+      min-width:160px;
+      text-align:center;
+    }
+
+    .small{
+      font-size:13px;color:#222;
+    }
+
+    /* responsive */
+    @media (max-width:600px){
+      .passage textarea{ width:100%; }
+      .laptop-layer{ padding:12px; }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="laptop-layer" role="main" aria-label="Area latihan teks rumpang">
+    <div class="card" id="card">
+      <h1>Latihan Mengisi Teks Rumpang (Kenalan)</h1>
+      <p class="instr">Sebelum mengisi, <strong>mohon putar rekaman sampai selesai</strong>. Setelah rekaman selesai diputar, area isian akan terbuka.</p>
+
+      <div class="audio-row">
+        <audio id="audio" controls preload="none">
+          <source src="https://mtsnumiftahuttholibin.github.io/pelatihan/kenalan.mp3" type="audio/mpeg">
+          Browser Anda tidak mendukung pemutar audio. Silakan buka tautan langsung: <a href="https://mtsnumiftahuttholibin.github.io/pelatihan/kenalan.mp3" target="_blank" rel="noopener">Buka audio</a>
+        </audio>
+        <div class="note small" id="audioNote">Putar sampai selesai untuk membuka isian.</div>
+      </div>
+
+      <div class="passage" aria-live="polite">
+        <!-- Passage with textareas for blanks 1..5 -->
+        <p>
+          My <textarea id="b1" rows="1" placeholder="" aria-label="Isian 1" disabled></textarea> is Rosalia.
+          I am <textarea id="b2" rows="1" placeholder="" aria-label="Isian 2" disabled></textarea> years old.
+          I am at the <textarea id="b3" rows="1" placeholder="" aria-label="Isian 3" disabled></textarea> of junior high school.
+          Now, I live with my lovely family in <textarea id="b4" rows="1" placeholder="" aria-label="Isian 4" disabled></textarea> West Java.
+          There are <textarea id="b5" rows="1" placeholder="" aria-label="Isian 5" disabled></textarea> people in my family.
+        </p>
+      </div>
+
+      <div class="controls" style="margin-bottom:10px;">
+        <button id="check" disabled>Hasil</button>
+        <button id="reset">Reset</button>
+        <div id="feedback" class="feedback" aria-live="polite">Menunggu rekaman...</div>
+      </div>
+
+      <p class="small">Jawaban yang benar (untuk guru): [1] = <em>name</em>, [2] = <em>thirteen</em>, [3] = <em>first grade</em>, [4] = <em>bandung</em>, [5] = <em>five</em>. Pengecekan tidak sensitif huruf besar/kecil dan mengabaikan spasi di ujung.</p>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      // Expected answers (lowercase, trimmed)
+      const answers = {
+        b1: "name",
+        b2: "thirteen",
+        b3: "first grade",
+        b4: "bandung",
+        b5: "five"
+      };
+
+      // elements
+      const audio = document.getElementById('audio');
+      const audioNote = document.getElementById('audioNote');
+      const inputs = ["b1","b2","b3","b4","b5"].map(id => document.getElementById(id));
+      const btnCheck = document.getElementById('check');
+      const btnReset = document.getElementById('reset');
+      const feedback = document.getElementById('feedback');
+
+      // disable inputs initially (already set), btnCheck disabled
+      function setInputsEnabled(enabled){
+        inputs.forEach(inp => {
+          inp.disabled = !enabled;
+          if(enabled) inp.style.background = ''; // keep white as requested (defined in CSS)
+          else inp.style.background = ''; // still white
+        });
+        btnCheck.disabled = !enabled;
+      }
+
+      // On audio ended -> enable inputs
+      audio.addEventListener('ended', ()=> {
+        setInputsEnabled(true);
+        audioNote.textContent = "Rekaman selesai. Silakan isi teks rumpang.";
+        feedback.textContent = "Silakan isi jawaban lalu klik 'Hasil'.";
+        feedback.style.background = "rgba(255,255,255,0.9)";
+      });
+
+      // Also enable if user clicked Play and audio currentTime > 0 but not ended? For strictness we require ended.
+      // But give option: if user prefers, they can click 'Enable' by playing to end.
+
+      // Check answers
+      btnCheck.addEventListener('click', ()=> {
+        let allCorrect = true;
+        // evaluate each
+        inputs.forEach(inp => {
+          const id = inp.id;
+          const val = (inp.value || "").toString().trim().toLowerCase();
+          const expected = answers[id];
+          if(val === expected) {
+            inp.style.borderColor = "#2f8f46"; // green border for correct
+            inp.style.boxShadow = "0 3px 8px rgba(47,143,70,0.12)";
+          } else {
+            allCorrect = false;
+            inp.style.borderColor = "#d33"; // red border for incorrect
+            inp.style.boxShadow = "0 3px 8px rgba(211,0,0,0.08)";
+          }
+        });
+
+        if(allCorrect){
+          feedback.textContent = "Good Job";
+          feedback.style.background = "rgba(200,255,220,0.95)";
+          feedback.style.color = "#0a4d23";
+        } else {
+          feedback.textContent = "Please try again!";
+          feedback.style.background = "rgba(255,230,230,0.95)";
+          feedback.style.color = "#7a0a0a";
+        }
+      });
+
+      // Reset logic
+      btnReset.addEventListener('click', ()=>{
+        // clear inputs
+        inputs.forEach(inp => {
+          inp.value = "";
+          inp.style.borderColor = "";
+          inp.style.boxShadow = "";
+        });
+        // disable until audio ended again
+        setInputsEnabled(false);
+        feedback.textContent = "Menunggu rekaman...";
+        feedback.style.background = "rgba(255,255,255,0.6)";
+        feedback.style.color = "#111";
+        audio.currentTime = 0;
+        audio.pause();
+        audioNote.textContent = "Putar kembali rekaman sampai selesai untuk membuka isian.";
+      });
+
+      // Accessibility: pressing Enter in a textarea shouldn't submit anything; so do nothing special.
+
+      // Initialize state
+      setInputsEnabled(false);
+    })();
+  </script>
+</body>
+</html>
